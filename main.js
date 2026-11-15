@@ -156,8 +156,21 @@ const S = {
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, .1, 200);
 const colliders = buildMap(scene);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(innerWidth, innerHeight); document.body.appendChild(renderer.domElement);
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+} catch (e) {
+  document.getElementById('msg').textContent = 'WEBGL ERROR: ' + e.message;
+  document.getElementById('msg').style.color = '#ff5555';
+  throw e;
+}
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+if (!renderer.getContext()) {
+  document.getElementById('msg').textContent = 'NO WEBGL CONTEXT';
+  document.getElementById('msg').style.color = '#ff5555';
+}
 
 // muzzle flash
 const flash = new THREE.PointLight(0xffcc66, 0, 12); scene.add(flash);
